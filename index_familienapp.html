@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Familien-Notizen App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f9fafb;
+            --gray: #e5e7eb;
+            --dark: #1f2937;
+            --family: #f0abfc;
+            --success: #34d399;
+            --subgroup-reichenau: #d1fae5;
+            --subgroup-disentis: #dbeafe;
+            --subgroup-zuhause: #fce7f3;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .content {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card h2 i {
+            color: var(--primary);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+        button:hover {
+            background: var(--primary-light);
+        }
+        button.danger {
+            background: var(--danger);
+        }
+        button.danger:hover {
+            background: #dc2626;
+        }
+        button.warning {
+            background: var(--warning);
+        }
+        button.warning:hover {
+            background: #d97706;
+        }
+        button.secondary {
+            background: var(--secondary);
+        }
+        button.secondary:hover {
+            background: #059669;
+        }
+        .list {
+            margin-top: 1rem;
+        }
+        .item {
+            background: var(--light);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item.family {
+            background: var(--family);
+        }
+        .item.reichenau {
+            background: var(--subgroup-reichenau);
+            border-left: 4px solid var(--secondary);
+        }
+        .item.disentis {
+            background: var(--subgroup-disentis);
+            border-left: 4px solid var(--primary);
+        }
+        .item.zuhause {
+            background: var(--subgroup-zuhause);
+            border-left: 4px solid #f472b6;
+        }
+        .item.done {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 1.2rem;
+            padding: 0.3rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .icon-btn:hover {
+            background: #fee2e2;
+        }
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .nav-button {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--gray);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .nav-button.active {
+            background: var(--primary);
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .admin-panel {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .user-list {
+            margin-top: 1rem;
+        }
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .quantity {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-left: 0.5rem;
+        }
+        .login-card {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .login-card h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+        }
+        .login-card button {
+            margin-top: 1rem;
+        }
+        .logout-btn {
+            background: var(--warning);
+            margin-top: 1rem;
+        }
+        .logout-btn:hover {
+            background: #d97706;
+        }
+    </style>
+</head>
+<body>
+    <div id="appArea" class="hidden">
+        <div class="header">
+            <h1><i class="fas fa-home"></i> Familien-Notizen</h1>
+            <div class="user-info">
+                <span id="userName"></span>
+                <div id="userAvatar" class="user-avatar"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content">
+                <div class="nav">
+                    <div class="nav-button active" onclick="showSection('notes')">
+                        <i class="fas fa-sticky-note"></i> Notizen
+                    </div>
+                    <div class="nav-button" onclick="showSection('shopping')">
+                        <i class="fas fa-shopping-cart"></i> Einkaufen
+                    </div>
+                </div>
+
+                <!-- Notizen -->
+                <div id="notesSection" class="section card">
+                    <h2><i class="fas fa-sticky-note"></i> Notizen</h2>
+                    <div class="form-group">
+                        <label for="noteText">Neue Notiz</label>
+                        <textarea id="noteText" placeholder="Deine Notiz..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="noteGroup">Gruppe</label>
+                        <select id="noteGroup">
+                            <option value="reichenau">Reichenau</option>
+                            <option value="disentis">Disentis</option>
+                            <option value="zuhause">Zuhause</option>
+                        </select>
+                    </div>
+                    <button onclick="addNote()"><i class="fas fa-plus"></i> Hinzufügen</button>
+                    <div class="list" id="familyNotes"></div>
+                </div>
+
+                <!-- Einkaufsliste -->
+                <div id="shoppingSection" class="section card hidden">
+                    <h2><i class="fas fa-shopping-cart"></i> Einkaufsliste</h2>
+                    <div class="form-group">
+                        <label for="shoppingItem">Artikel</label>
+                        <input id="shoppingItem" type="text" placeholder="z.B. Milch">
+                    </div>
+                    <div class="form-group">
+                        <label for="shoppingQuantity">Menge (optional)</label>
+                        <input id="shoppingQuantity" type="text" placeholder="z.B. 2 Liter">
+                    </div>
+                    <button onclick="addShoppingItem()"><i class="fas fa-plus"></i> Hinzufügen</button>
+                    <div class="list" id="shoppingList"></div>
+                </div>
+
+                <!-- Admin -->
+                <div id="adminSection" class="section card hidden">
+                    <h2><i class="fas fa-user-shield"></i> Admin</h2>
+                    <div class="admin-panel">
+                        <h3>Nutzer hinzufügen</h3>
+                        <div class="form-group">
+                            <label for="newUser">Neuer Benutzername</label>
+                            <input id="newUser" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPass">Neues Passwort</label>
+                            <input id="newPass" type="password">
+                        </div>
+                        <button onclick="addUser()"><i class="fas fa-plus"></i> Hinzufügen</button>
+                    </div>
+                    <div class="user-list" id="userList"></div>
+                    <button onclick="changePassword()"><i class="fas fa-key"></i> Passwort ändern</button>
+                </div>
+
+                <button id="logoutBtn" class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Abmelden
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginArea" class="login-card">
+        <h2><i class="fas fa-sign-in-alt"></i> Anmelden</h2>
+        <div class="form-group">
+            <label for="loginUsername">Benutzername</label>
+            <input id="loginUsername" type="text" required>
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">Passwort</label>
+            <input id="loginPassword" type="password" required>
+        </div>
+        <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Anmelden</button>
+    </div>
+
+    <script>
+        // Datenstruktur laden oder initialisieren
+        let users = JSON.parse(localStorage.getItem('familyNotesUsers')) || { "mael.krauer": { password: "Mael2009", isAdmin: true } };
+        let notes = JSON.parse(localStorage.getItem('familyNotesNotes')) || { "family": [] };
+        let shoppingList = JSON.parse(localStorage.getItem('familyNotesShoppingList')) || [];
+        let currentUser = null;
+
+        // Daten speichern
+        function saveData() {
+            localStorage.setItem('familyNotesUsers', JSON.stringify(users));
+            localStorage.setItem('familyNotesNotes', JSON.stringify(notes));
+            localStorage.setItem('familyNotesShoppingList', JSON.stringify(shoppingList));
+        }
+
+        // Login
+        function login() {
+            let username = document.getElementById("loginUsername").value;
+            let password = document.getElementById("loginPassword").value;
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                document.getElementById("loginArea").classList.add("hidden");
+                document.getElementById("appArea").classList.remove("hidden");
+                document.getElementById("userName").textContent = username;
+                document.getElementById("userAvatar").textContent = username.charAt(0).toUpperCase();
+                updateNotes();
+                updateShoppingList();
+                updateUserList();
+                // Admin-Button nur für Admin anzeigen
+                if (users[username].isAdmin) {
+                    document.querySelector('.nav').innerHTML += `
+                        <div class="nav-button" onclick="showSection('admin')">
+                            <i class="fas fa-user-shield"></i> Admin
+                        </div>
+                    `;
+                }
+            } else {
+                alert("Falscher Benutzername oder Passwort!");
+            }
+        }
+
+        // Abmelden
+        function logout() {
+            currentUser = null;
+            document.getElementById("loginArea").classList.remove("hidden");
+            document.getElementById("appArea").classList.add("hidden");
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
+        }
+
+        // Bereich anzeigen
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(el => el.classList.add("hidden"));
+            document.getElementById(section + "Section").classList.remove("hidden");
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove("active"));
+            event.target.classList.add("active");
+            // Admin-Bereich nur für Admin anzeigen
+            if (section === 'admin' && (!currentUser || !users[currentUser] || !users[currentUser].isAdmin)) {
+                alert("Nur der Admin darf den Admin-Bereich betreten!");
+                document.getElementById("notesSection").classList.remove("hidden");
+                document.getElementById("adminSection").classList.add("hidden");
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove("active"));
+                document.querySelector('.nav-button[onclick="showSection(\'notes\')"]').classList.add("active");
+            }
+        }
+
+        // Nutzer hinzufügen (nur Admin)
+        function addUser() {
+            if (!currentUser || !users[currentUser] || !users[currentUser].isAdmin) {
+                alert("Nur der Admin kann Nutzer hinzufügen!");
+                return;
+            }
+            let newUser = document.getElementById("newUser").value;
+            let newPass = document.getElementById("newPass").value;
+            if (!newUser || !newPass) {
+                alert("Benutzername und Passwort eingeben!");
+                return;
+            }
+            if (Object.keys(users).length >= 4) {
+                alert("Maximal 4 Nutzer möglich!");
+                return;
+            }
+            users[newUser] = { password: newPass, isAdmin: false };
+            notes[newUser] = [];
+            document.getElementById("newUser").value = "";
+            document.getElementById("newPass").value = "";
+            saveData();
+            updateUserList();
+            alert("Nutzer " + newUser + " hinzufügt!");
+        }
+
+        // Nutzer entfernen (nur Admin)
+        function removeUser(username) {
+            if (!currentUser || !users[currentUser] || !users[currentUser].isAdmin) {
+                alert("Nur der Admin kann Nutzer entfernen!");
+                return;
+            }
+            if (username === currentUser) {
+                alert("Du kannst dich nicht selbst entfernen!");
+                return;
+            }
+            delete users[username];
+            delete notes[username];
+            saveData();
+            updateUserList();
+        }
+
+        // Nutzerliste aktualisieren
+        function updateUserList() {
+            let listDiv = document.getElementById("userList");
+            listDiv.innerHTML = "";
+            Object.keys(users).forEach(user => {
+                let div = document.createElement("div");
+                div.className = "user-item";
+                div.innerHTML = `<strong>${user}</strong> ${users[user].isAdmin ? '(Admin)' : ''}`;
+                if (currentUser !== user && users[currentUser]?.isAdmin) {
+                    let removeBtn = document.createElement("button");
+                    removeBtn.className = "icon-btn";
+                    removeBtn.innerHTML = `<i class="fas fa-trash"></i>`;
+                    removeBtn.onclick = () => removeUser(user);
+                    div.appendChild(removeBtn);
+                }
+                listDiv.appendChild(div);
+            });
+        }
+
+        // Notizen hinzufügen
+        function addNote() {
+            let text = document.getElementById("noteText").value;
+            let group = document.getElementById("noteGroup").value;
+            if (!text) return;
+            notes["family"].push({ text, group });
+            document.getElementById("noteText").value = "";
+            saveData();
+            updateNotes();
+        }
+
+        // Notiz bearbeiten
+        function editNote(index) {
+            let note = notes["family"][index];
+            let newText = prompt("Notiz bearbeiten:", note.text);
+            if (newText === null) return;
+            note.text = newText;
+            saveData();
+            updateNotes();
+        }
+
+        // Notiz löschen
+        function deleteNote(index) {
+            notes["family"].splice(index, 1);
+            saveData();
+            updateNotes();
+        }
+
+        // Notizen anzeigen (mit Untergruppen)
+        function updateNotes() {
+            let familyDiv = document.getElementById("familyNotes");
+            familyDiv.innerHTML = "";
+            // Gruppieren nach Untergruppe
+            let groups = {
+                "reichenau": [],
+                "disentis": [],
+                "zuhause": []
+            };
+            notes["family"].forEach((note, i) => {
+                if (groups[note.group]) {
+                    groups[note.group].push({ note, index: i });
+                }
+            });
+            // Gruppen anzeigen
+            for (let group in groups) {
+                if (groups[group].length === 0) continue;
+                let groupName = group === "reichenau" ? "Reichenau" : group === "disentis" ? "Disentis" : "Zuhause";
+                let groupEl = document.createElement("div");
+                groupEl.className = "item " + group;
+                groupEl.innerHTML = `<div style="font-weight:600;margin-bottom:0.5rem;">${groupName}</div>`;
+                groups[group].forEach(item => {
+                    let div = document.createElement("div");
+                    div.className = "item " + group;
+                    let noteText = document.createElement("span");
+                    noteText.textContent = item.note.text;
+                    noteText.style.flex = "1";
+                    let actions = document.createElement("div");
+                    actions.className = "item-actions";
+                    actions.innerHTML = `<button class="icon-btn" onclick="editNote(${item.index})" title="Bearbeiten"><i class="fas fa-edit"></i></button>
+                                        <button class="icon-btn" onclick="deleteNote(${item.index})" title="Löschen"><i class="fas fa-trash"></i></button>`;
+                    div.appendChild(noteText);
+                    div.appendChild(actions);
+                    groupEl.appendChild(div);
+                });
+                familyDiv.appendChild(groupEl);
+            }
+        }
+
+        // Einkaufsliste
+        function addShoppingItem() {
+            let item = document.getElementById("shoppingItem").value;
+            let quantity = document.getElementById("shoppingQuantity").value;
+            if (!item) return;
+            shoppingList.push({ item, quantity, done: false });
+            document.getElementById("shoppingItem").value = "";
+            document.getElementById("shoppingQuantity").value = "";
+            saveData();
+            updateShoppingList();
+        }
+
+        function toggleShoppingItem(index) {
+            shoppingList[index].done = !shoppingList[index].done;
+            saveData();
+            updateShoppingList();
+        }
+
+        function removeShoppingItem(index) {
+            shoppingList.splice(index, 1);
+            saveData();
+            updateShoppingList();
+        }
+
+        function updateShoppingList() {
+            let listDiv = document.getElementById("shoppingList");
+            listDiv.innerHTML = "";
+            shoppingList.forEach((entry, i) => {
+                let div = document.createElement("div");
+                div.className = "item" + (entry.done ? " done" : "");
+                let text = entry.item;
+                if (entry.quantity) text += ` (${entry.quantity})`;
+                let itemText = document.createElement("span");
+                itemText.textContent = text;
+                itemText.style.flex = "1";
+                itemText.onclick = () => toggleShoppingItem(i);
+                let actions = document.createElement("div");
+                actions.className = "item-actions";
+                actions.innerHTML = `<button class="icon-btn" onclick="removeShoppingItem(${i})" title="Löschen"><i class="fas fa-trash"></i></button>`;
+                div.appendChild(itemText);
+                div.appendChild(actions);
+                listDiv.appendChild(div);
+            });
+        }
+
+        // Passwort ändern (für alle Nutzer)
+        function changePassword() {
+            let oldPass = prompt("Altes Passwort:");
+            if (oldPass !== users[currentUser].password) {
+                alert("Falsches Passwort!");
+                return;
+            }
+            let newPass = prompt("Neues Passwort:");
+            if (newPass) {
+                users[currentUser].password = newPass;
+                saveData();
+                alert("Passwort geändert!");
+            }
+        }
+
+        // Initialisierung
+        document.getElementById("appArea").classList.add("hidden");
+    </script>
+</body>
+</html>
