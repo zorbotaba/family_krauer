@@ -89,7 +89,7 @@
             margin-bottom: 1rem;
             color: var(--primary);
             display: flex;
-            align-items: center;
+            align-items: center,
             gap: 0.5rem;
         }
         .card h2 i {
@@ -120,7 +120,7 @@
         }
         button {
             background: var(--primary);
-            color: white;
+            color: white,
             border: none;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -377,9 +377,9 @@
         const firebaseConfig = {
             apiKey: "AIzaSyAGgwWztwJRNRKerdzywFp01qhtEiCveZk",
             authDomain: "familien-notizen.firebaseapp.com",
-            databaseURL: "https://familien-notizen-default-rtdb.firebaseio.com", // WICHTIG: Richtige URL!
+            databaseURL: "https://familien-notizen-default-rtdb.firebaseio.com", // ODER die andere, je nach Region!
             projectId: "familien-notizen",
-            storageBucket: "familien-notizen.appspot.com", // Optional, aber besser so
+            storageBucket: "familien-notizen.appspot.com",
             messagingSenderId: "681557744357",
             appId: "1:681557744357:web:aadead6dfac7e9adecd20c"
         };
@@ -394,7 +394,9 @@
 
         // Daten speichern (Firebase)
         function saveDataToFirebase() {
-            db.ref('/').set({
+            // WICHTIG: Hier anpassen, falls du die Datenbank direkt unter dem Root hast!
+            // Dann: db.ref('/').set({ ... })
+            db.ref('familienNotizen').set({
                 users: users,
                 notes: notes,
                 shoppingList: shoppingList
@@ -402,6 +404,8 @@
         }
 
         // Daten laden (Firebase)
+        // WICHTIG: Hier anpassen, falls du die Datenbank direkt unter dem Root hast!
+        // Dann: db.ref('/').on('value', ...)
         db.ref('familienNotizen').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -612,7 +616,7 @@
         }
 
         function toggleShoppingItem(index) {
-            shoppingList[index].done = !shhoppingList[index].done;
+            shoppingList[index].done = !shoppingList[index].done;
             saveDataToFirebase();
             updateShoppingList();
         }
