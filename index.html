@@ -394,7 +394,7 @@
 
         // Daten speichern (Firebase)
         function saveDataToFirebase() {
-            db.ref('familienNotizen').set({
+            db.ref('/').set({
                 users: users,
                 notes: notes,
                 shoppingList: shoppingList
