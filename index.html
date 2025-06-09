@@ -369,19 +369,50 @@
         <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Anmelden</button>
     </div>
 
+    <!-- Firebase einbinden -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <script>
-        // Datenstruktur laden oder initialisieren
-        let users = JSON.parse(localStorage.getItem('familyNotesUsers')) || { "mael.krauer": { password: "Mael2009", isAdmin: true } };
-        let notes = JSON.parse(localStorage.getItem('familyNotesNotes')) || { "family": [] };
-        let shoppingList = JSON.parse(localStorage.getItem('familyNotesShoppingList')) || [];
+        // Firebase-Konfiguration (ersetze ggf. die databaseURL!)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGgwWztwJRNRKerdzywFp01qhtEiCveZk",
+            authDomain: "familien-notizen.firebaseapp.com",
+            databaseURL: "https://familien-notizen-default-rtdb.europe-west1.firebasedatabase.app", // WICHTIG: Richtige URL!
+            projectId: "familien-notizen",
+            storageBucket: "familien-notizen.appspot.com",
+            messagingSenderId: "681557744357",
+            appId: "1:681557744357:web:aadead6dfac7e9adecd20c"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Datenstruktur
+        let users = {};
+        let notes = { "family": [] };
+        let shoppingList = [];
         let currentUser = null;
 
-        // Daten speichern
-        function saveData() {
-            localStorage.setItem('familyNotesUsers', JSON.stringify(users));
-            localStorage.setItem('familyNotesNotes', JSON.stringify(notes));
-            localStorage.setItem('familyNotesShoppingList', JSON.stringify(shoppingList));
+        // Daten speichern (Firebase)
+        function saveDataToFirebase() {
+            db.ref('familienNotizen').set({
+                users: users,
+                notes: notes,
+                shoppingList: shoppingList
+            });
         }
+
+        // Daten laden (Firebase)
+        db.ref('familienNotizen').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                users = data.users || {};
+                notes = data.notes || { "family": [] };
+                shoppingList = data.shoppingList || [];
+                updateNotes();
+                updateShoppingList();
+                updateUserList();
+            }
+        });
 
         // Login
         function login() {
@@ -454,9 +485,9 @@
             notes[newUser] = [];
             document.getElementById("newUser").value = "";
             document.getElementById("newPass").value = "";
-            saveData();
+            saveDataToFirebase();
             updateUserList();
-            alert("Nutzer " + newUser + " hinzufügt!");
+            alert("Nutzer " + newUser + " hinzugefügt!");
         }
 
         // Nutzer entfernen (nur Admin)
@@ -471,7 +502,7 @@
             }
             delete users[username];
             delete notes[username];
-            saveData();
+            saveDataToFirebase();
             updateUserList();
         }
 
@@ -501,7 +532,7 @@
             if (!text) return;
             notes["family"].push({ text, group });
             document.getElementById("noteText").value = "";
-            saveData();
+            saveDataToFirebase();
             updateNotes();
         }
 
@@ -511,14 +542,14 @@
             let newText = prompt("Notiz bearbeiten:", note.text);
             if (newText === null) return;
             note.text = newText;
-            saveData();
+            saveDataToFirebase();
             updateNotes();
         }
 
         // Notiz löschen
         function deleteNote(index) {
             notes["family"].splice(index, 1);
-            saveData();
+            saveDataToFirebase();
             updateNotes();
         }
 
@@ -570,19 +601,19 @@
             shoppingList.push({ item, quantity, done: false });
             document.getElementById("shoppingItem").value = "";
             document.getElementById("shoppingQuantity").value = "";
-            saveData();
+            saveDataToFirebase();
             updateShoppingList();
         }
 
         function toggleShoppingItem(index) {
             shoppingList[index].done = !shoppingList[index].done;
-            saveData();
+            saveDataToFirebase();
             updateShoppingList();
         }
 
         function removeShoppingItem(index) {
             shoppingList.splice(index, 1);
-            saveData();
+            saveDataToFirebase();
             updateShoppingList();
         }
 
@@ -617,7 +648,7 @@
             let newPass = prompt("Neues Passwort:");
             if (newPass) {
                 users[currentUser].password = newPass;
-                saveData();
+                saveDataToFirebase();
                 alert("Passwort geändert!");
             }
         }
