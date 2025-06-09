@@ -35,7 +35,7 @@
             display: flex;
             flex-direction: column;
         }
-        container {
+        .container {
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
@@ -319,7 +319,7 @@
                 <div id="shoppingSection" class="section card hidden">
                     <h2><i class="fas fa-shopping-cart"></i> Einkaufsliste</h2>
                     <div class="form-group">
-                        <label for="shhoppingItem">Artikel</label>
+                        <label for="shoppingItem">Artikel</label>
                         <input id="shoppingItem" type="text" placeholder="z.B. Milch">
                     </div>
                     <div class="form-group">
@@ -411,6 +411,8 @@
                 updateNotes();
                 updateShoppingList();
                 updateUserList();
+                // Debug: Zeige die geladenen Nutzer an
+                console.log("Geladene Nutzer:", users);
             }
         });
 
@@ -418,6 +420,8 @@
         function login() {
             let username = document.getElementById("loginUsername").value;
             let password = document.getElementById("loginPassword").value;
+            // Debug: Zeige den eingegebenen Nutzer an
+            console.log("Versuche Login mit:", username, password);
             if (users[username] && users[username].password === password) {
                 currentUser = username;
                 document.getElementById("loginArea").classList.add("hidden");
@@ -437,6 +441,8 @@
                 }
             } else {
                 alert("Falscher Benutzername oder Passwort!");
+                // Debug: Zeige die verfügbaren Nutzer an
+                console.log("Verfügbare Nutzer:", users);
             }
         }
 
@@ -482,7 +488,7 @@
                 return;
             }
             users[newUser] = { password: newPass, isAdmin: false };
-            notes[newUser] = [];
+            notes[newUser] = []; // Optional, falls du persönliche Notizen pro Nutzer möchtest
             document.getElementById("newUser").value = "";
             document.getElementById("newPass").value = "";
             saveDataToFirebase();
@@ -501,7 +507,7 @@
                 return;
             }
             delete users[username];
-            delete notes[username];
+            delete notes[username]; // Optional, falls du persönliche Notizen pro Nutzer hast
             saveDataToFirebase();
             updateUserList();
         }
@@ -606,7 +612,7 @@
         }
 
         function toggleShoppingItem(index) {
-            shoppingList[index].done = !shoppingList[index].done;
+            shoppingList[index].done = !shhoppingList[index].done;
             saveDataToFirebase();
             updateShoppingList();
         }
@@ -655,6 +661,13 @@
 
         // Initialisierung
         document.getElementById("appArea").classList.add("hidden");
+
+        // Debug: Zeige die aktuelle Datenbankstruktur an
+        console.log("Aktuelle Datenbankstruktur:", {
+            users: users,
+            notes: notes,
+            shoppingList: shoppingList
+        });
     </script>
 </body>
 </html>
